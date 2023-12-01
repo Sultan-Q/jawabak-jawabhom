@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>جوابك جوابهم</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="mb-3 mt-20 mx-20">
+      <div class="relative mb-4 flex w-full flex-wrap items-stretch">
+        <input
+          type="text"
+          id="searchInput"
+          class="relative m-0 block min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+          placeholder="ابحث هنا"
+          aria-label="ابحث هنا"
+          aria-describedby="button-addon2"
+        />
+
+        <!--Search icon-->
+        <span
+          class="input-group-text flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-neutral-700 dark:text-neutral-200"
+          id="basic-addon2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="h-5 w-5"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+      </div>
+    </div>
+    <div class="flex-grow border-t border-gray-400"></div>
+    <div class="container mx-auto">
+      <div
+        id="searchResults"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      ></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Function to search the array and display results
+        function search(data) {
+          var query = $("#searchInput").val().trim().toLowerCase();
+          var results = [];
+
+          // Search for the query in the data array
+          data.forEach(function (item) {
+            var question = item.question.question.toLowerCase();
+            if (question.includes(query)) {
+              results.push(item);
+            }
+          });
+
+          // Display the search results
+          var searchResults = $("#searchResults");
+          searchResults.empty();
+
+          if (results.length > 0) {
+            results.forEach(function (item) {
+              var question = item.question.question;
+              var answers = item.question.answers
+                .map(function (answer) {
+                  return answer.answer;
+                })
+                .join("<br>_________________________<br>");
+
+              var resultHTML = `
+              
+
+      <div class="card m-2 border border-gray-400 rounded-lg hover:shadow-md hover:border-opacity-0 transform hover:-translate-y-1 transition-all duration-200">
+        <div class="m-3">
+          <h2 class="text-lg mb-2">${question}
+        </h2>
+        <p class="font-light font-mono text-sm text-gray-700 hover:text-gray-900 transition-all duration-200">${answers}</p>
+        </div>
+      </div>
+
+
+
+              
+              
+              `;
+
+              //     "<div><strong>Question:</strong> " + question + "</div>";
+              //   resultHTML +=
+              //     "<div><strong>Answers:</strong> " + answers + "</div>";
+              searchResults.append(resultHTML);
+            });
+          } else {
+            searchResults.append("<div>لا توجد نتيجة</div>");
+          }
+        }
+
+        // Fetch the JSON file and call the search function
+        $.ajax({
+          url: "/nn.json",
+          dataType: "json",
+          success: function (data) {
+            // Call the search function with the retrieved data
+            $("#searchInput").on("input", function () {
+              search(data);
+            });
+          },
+          error: function () {
+            console.log("Error loading JSON file");
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
